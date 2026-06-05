@@ -1,17 +1,2 @@
 streamlit
 openai
-
-**Update `privacy.py`:** Use this version. It’s clean, professional, and directly addresses the "Privacy Paradox" you were worried about.
-    ```python
-    import re
-
-    def redact_pii(text):
-        # Patterns for common PII
-        patterns = {
-            r'\S+@\S+': '[EMAIL]',
-            r'\b\d{3}-\d{2}-\d{4}\b': '[SSN]',
-            r'\+?\d{10,15}': '[PHONE]',
-        }
-        for pattern, replacement in patterns.items():
-            text = re.sub(pattern, replacement, text)
-        return text
