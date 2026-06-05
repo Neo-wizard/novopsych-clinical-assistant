@@ -2,6 +2,13 @@ import streamlit as st
 from privacy import redact_pii
 from openai import OpenAI
 
+import streamlit as st
+# Debugging
+if "OPENAI_API_KEY" in st.secrets:
+    st.success("API Key successfully loaded from secrets!")
+else:
+    st.error("API Key NOT FOUND in secrets!")
+
 # Initialize client (Ensure you have your key in Streamlit Secrets)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
