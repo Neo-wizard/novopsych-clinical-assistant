@@ -1,19 +1,35 @@
 import streamlit as st
 from privacy import redact_pii
+from openai import OpenAI
 
-# 1. Initialize the session state variable if it doesn't exist
-if 'redacted_text' not in st.session_state:
-    st.session_state.redacted_text = ""
+# Initialize client (Ensure you have your key in Streamlit Secrets)
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.title("Clinical AI Prototype")
-transcript = st.text_area("Paste Session Transcript:")
+st.title("🧠 NovoBridge: Clinical Synthesis")
 
-# 2. When button is clicked, update the session state
-if st.button("Secure & Analyze"):
-    if transcript:
-        st.session_state.redacted_text = redact_pii(transcript)
+# Sidebar for Psychometric Selection
+metric = st.sidebar.selectbox("Select Psychometric Track", ["DASS-21 (Depression/Anxiety)", "ADHD Adult Scale"])
 
-# 3. Always display whatever is currently in the session state
-if st.session_state.redacted_text:
-    st.subheader("Redacted Output:")
-    st.write(st.session_state.redacted_text)
+transcript = st.text_area("Paste Transcript:")
+
+if st.button("Generate Insight"):
+    # 1. Redact
+    safe_text = redact_pii(transcript)
+    
+    # 2. Analyze against metric
+    with st.spinner("Mapping to psychometric indicators..."):
+        prompt = f"""
+        You are a clinical assistant. Analyze this transcript for markers related to {metric}.
+        Transcript: {safe_text}
+        
+        Output:
+        1. List relevant symptoms found.
+        2. Draft a SOAP note snippet.
+        """
+        
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        
+        st.write(response.choices.message.content)
