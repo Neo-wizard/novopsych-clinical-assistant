@@ -40,3 +40,29 @@ if st.button("Generate Insight"):
         )
         
         st.write(response.choices.message.content)
+
+# Save the response to a variable first
+report_text = response.choices[0].message.content
+
+# Add a download button
+st.download_button(
+    label="📥 Download Clinical Report",
+    data=report_text,
+    file_name="clinical_note.txt",
+    mime="text/plain"
+)
+
+if st.button("Generate Insight"):
+    safe_text = redact_pii(transcript)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Redacted Transcript")
+        st.write(safe_text)
+        
+    with col2:
+        st.subheader("Clinical Synthesis")
+        # ... your API call code here ...
+        st.write(report_text)
+        st.download_button(...)
